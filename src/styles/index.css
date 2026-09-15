@@ -1,0 +1,422 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #eaf4f8;
+  --panel: #ffffff;
+  --board-bg: #1f6fa8;
+  --line: #d7e6ee;
+  --text: #17293a;
+  --muted: #5d7a90;
+  --accent: #ff9a4d;
+  --btn-bg: #f0f6f9;
+  --btn-bg-hover: #e2eef4;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font-family: inherit;
+}
+
+.app {
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+  padding-bottom: 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.topbar__stats {
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.topbar__stat .stat__label {
+  margin-right: 4px;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Keyboard help ---------- */
+.help {
+  position: relative;
+}
+
+.help__trigger {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--btn-bg);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.help__trigger:hover,
+.help__trigger[aria-expanded='true'] {
+  background: var(--btn-bg-hover);
+  color: var(--text);
+}
+
+.help__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 24px -8px rgba(20, 22, 30, 0.35);
+  z-index: 10;
+}
+
+.help__title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.help__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.help__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.help__keys {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.help__key {
+  min-width: 20px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: var(--btn-bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+}
+
+.help__label {
+  font-size: 12.5px;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ---------- Layout ---------- */
+.layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.board-shell {
+  position: relative;
+  aspect-ratio: 1 / 2;
+  flex: 1;
+  min-height: 0;
+  max-height: 640px;
+  max-width: 94vw;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(20, 22, 30, 0.05), 0 12px 32px -12px rgba(20, 22, 30, 0.25);
+  /* Swipes drive movement here — don't let the browser scroll/zoom on them. */
+  touch-action: none;
+}
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--board-bg);
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* ---------- Stats sidebar (score/level/bonus + next preview). ---------- */
+.stats-sidebar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.stats-sidebar__section {
+  flex: none;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-sidebar__stats {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.stat__value--best {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Score and Words already show in the topbar on the compact strip. */
+.stat--duplicate {
+  display: none;
+}
+
+.stat__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.stat__value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--btn-bg);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 14px 0;
+  flex: 1;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--btn-bg-hover);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  font-size: 13px;
+  padding: 8px 14px;
+  flex: none;
+  font-family: var(--font-mono);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 12px 22px;
+  flex: none;
+}
+
+.btn--primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.footer-bar {
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The one action in the game — tapping the board does the same thing, but
+   this stays big and thumb-reachable for when the board is covered by the
+   overlay or the player just prefers a fixed button. */
+.btn--splash {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  padding: 16px 0;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Overlay ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 22, 30, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.overlay__card {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 280px;
+}
+
+.overlay__card h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 20px;
+}
+
+.overlay__card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ---------- Wide layout: desktop and tablet landscape ----------
+   Both get the identical two-column arrangement — the game area centered
+   and as large as the window allows, and the next/score/level/bonus card
+   sized to its own content in the top right rather than stretched down the
+   column. Fills the window exactly, no page scroll. Gated on pointer:fine
+   for desktop, or pointer:coarse + landscape for tablet — a touch tablet in
+   landscape can easily be wider than 880px, so width alone can't tell it
+   apart from desktop. Footer bar (L / rotate / R) stays visible here too,
+   same as every other layout — desktop keyboard and mouse both still work. */
+@media (pointer: fine) and (min-width: 880px), (pointer: coarse) and (orientation: landscape) and (min-width: 840px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    grid-template-rows: 1fr;
+    align-items: stretch;
+    justify-items: center;
+    gap: 16px;
+  }
+
+  .board-shell {
+    grid-column: 1;
+    grid-row: 1;
+    flex: none;
+    height: auto;
+    max-height: 900px;
+  }
+
+  .stats-sidebar {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    width: 100%;
+    justify-self: stretch;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stats-sidebar__section {
+    width: auto;
+  }
+
+  .stats-sidebar__stats {
+    flex-direction: column;
+  }
+
+  .stat--duplicate {
+    display: flex;
+  }
+}
