@@ -36,7 +36,11 @@ export default function App() {
 
       <main className="layout">
         <div className="board-shell" onPointerDown={onBoardPointerDown}>
-          <GameCanvas world={world} phase={state.phase} />
+          <GameCanvas world={world} phase={state.phase} score={state.score} />
+          <div className="depth-badge">
+            <span className="depth-badge__label">Depth</span>
+            <span className="depth-badge__value">{state.level}</span>
+          </div>
           <GameOverlay
             phase={state.phase}
             score={state.score}

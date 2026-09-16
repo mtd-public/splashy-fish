@@ -169,8 +169,17 @@ button {
 }
 
 /* ---------- Layout ---------- */
+/* The topbar and footer keep their measured height; the play area is the only
+   thing that flexes, and min-height:0 lets it shrink rather than push the
+   footer past the bottom of the window. */
+.topbar,
+.footer-bar {
+  flex: none;
+}
+
 .layout {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,8 +199,43 @@ button {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(20, 22, 30, 0.05), 0 12px 32px -12px rgba(20, 22, 30, 0.25);
-  /* Swipes drive movement here — don't let the browser scroll/zoom on them. */
+  /* Taps drive the splash here — don't let the browser scroll/zoom on them. */
   touch-action: none;
+}
+
+/* ---------- Depth badge (sits on the board, every layout) ---------- */
+.depth-badge {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  padding: 6px 11px 7px;
+  border-radius: 10px;
+  background: rgba(8, 20, 33, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+.depth-badge__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1;
+}
+
+.depth-badge__value {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
 }
 
 .game-canvas {
@@ -371,6 +415,34 @@ button {
   font-size: 14px;
 }
 
+/* ---------- Immersive portrait: phone and tablet held upright ----------
+   Everything below the topbar is board. Tapping the board splashes, and depth
+   rides in the badge, so the footer button and stats card have nothing left to
+   say — they come back only on the wide layout below. The two queries are
+   mutually exclusive (this one needs portrait or a narrow window; that one
+   needs landscape and a wide one), so source order between them is moot. */
+@media (orientation: portrait) and (pointer: coarse), (max-width: 839px) {
+  .layout {
+    padding: 0;
+    gap: 0;
+  }
+
+  .board-shell {
+    aspect-ratio: auto;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .stats-sidebar,
+  .footer-bar {
+    display: none;
+  }
+}
+
 /* ---------- Wide layout: desktop and tablet landscape ----------
    Both get the identical two-column arrangement — the game area centered
    and as large as the window allows, and the next/score/level/bonus card
@@ -383,24 +455,44 @@ button {
 @media (pointer: fine) and (min-width: 880px), (pointer: coarse) and (orientation: landscape) and (min-width: 840px) {
   .layout {
     display: grid;
-    grid-template-columns: 1fr 200px;
-    grid-template-rows: 1fr;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
     justify-items: center;
     gap: 16px;
+    min-height: 0;
+    padding: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   }
 
+  /* Height-driven, not width-driven: the board takes the row it is given and
+     derives its width from the aspect ratio, so a short landscape window
+     shrinks the board instead of pushing the footer out of view. */
   .board-shell {
     grid-column: 1;
     grid-row: 1;
     flex: none;
-    height: auto;
-    max-height: 900px;
+    aspect-ratio: 1 / 2;
+    height: 100%;
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(20, 22, 30, 0.05), 0 12px 32px -12px rgba(20, 22, 30, 0.25);
+  }
+
+  .depth-badge {
+    top: 10px;
+  }
+
+  .footer-bar {
+    display: flex;
   }
 
   .stats-sidebar {
     grid-column: 2;
     grid-row: 1;
+    display: flex;
     align-self: start;
     width: 100%;
     justify-self: stretch;
@@ -418,5 +510,33 @@ button {
 
   .stat--duplicate {
     display: flex;
+  }
+}
+
+/* ---------- Short landscape windows ----------
+   Phones and small tablets turned sideways have very little vertical room, so
+   the chrome tightens up to leave the board as much of it as possible. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .layout {
+    padding: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+  }
+
+  .topbar {
+    padding-bottom: 6px;
+  }
+
+  .stats-sidebar {
+    padding: 10px;
+  }
+
+  .footer-bar {
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .btn--splash {
+    padding: 12px 0;
+    font-size: 15px;
   }
 }
