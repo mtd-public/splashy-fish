@@ -23,10 +23,14 @@ const GAP_SHRINK_PER_POINT = 1.5
 const BASE_SPEED = 190
 const MAX_SPEED = 380
 const SPEED_GAIN_PER_POINT = 5
-const SPAWN_SPACING = 300
+const SPAWN_SPACING = 420
 const OBSTACLE_MARGIN = 26
+const SPAWN_MARGIN = 260
+const CULL_MARGIN = 240
 
-export type ObstacleType = 'coral' | 'anchor'
+export type ObstacleType = 'coral' | 'anchor' | 'mine'
+
+const OBSTACLE_CYCLE: ObstacleType[] = ['coral', 'anchor', 'coral', 'mine']
 
 export interface Obstacle {
   id: number
@@ -74,10 +78,12 @@ function gapForScore(score: number) {
 function spawnObstacle(world: World) {
   const gapWidth = gapForScore(world.score)
   const gapStart = OBSTACLE_MARGIN + Math.random() * (BOARD_W - gapWidth - OBSTACLE_MARGIN * 2)
-  const type: ObstacleType = world.nextId % 2 === 0 ? 'anchor' : 'coral'
+  const type = OBSTACLE_CYCLE[world.nextId % OBSTACLE_CYCLE.length]
   world.obstacles.push({
     id: world.nextId++,
-    y: BOARD_H + OBSTACLE_THICKNESS,
+    // Spawned well clear of the board so a tall window (where the camera sees
+    // past BOARD_H) never shows a band appearing out of nothing.
+    y: BOARD_H + SPAWN_MARGIN,
     gapStart,
     gapWidth,
     type,
@@ -119,7 +125,7 @@ export function step(world: World, dt: number, input: { splash: boolean }) {
   for (const obstacle of world.obstacles) {
     obstacle.y -= speed * dt
   }
-  world.obstacles = world.obstacles.filter((o) => o.y > -OBSTACLE_THICKNESS)
+  world.obstacles = world.obstacles.filter((o) => o.y > -CULL_MARGIN)
 
   for (const obstacle of world.obstacles) {
     const bandTop = obstacle.y - OBSTACLE_THICKNESS / 2

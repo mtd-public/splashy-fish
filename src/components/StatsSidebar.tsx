@@ -26,11 +26,9 @@ export function StatsSidebar({ state }: { state: GameState }) {
         <span className="stat__value stat__value--best">{state.best.toLocaleString()}</span>
       </div>
       <div className="stats-sidebar__stats">
-        {/* Score already shows in the topbar — hidden here on the compact
-            phone/tablet-portrait strip, shown alongside Depth on the wide
-            (desktop/tablet-landscape) card. */}
+        {/* Score already shows in the topbar; depth has its own badge on the
+            board. Both stay here on the wide card, where there is room. */}
         <Stat label="Score" value={state.score} duplicate />
-        <Stat label="Depth" value={state.level} />
       </div>
     </aside>
   )

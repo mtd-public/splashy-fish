@@ -6,12 +6,15 @@ import type { GamePhase } from '../game/types'
 interface GameCanvasProps {
   world: { current: World }
   phase: GamePhase
+  score: number
 }
 
-export function GameCanvas({ world, phase }: GameCanvasProps) {
+export function GameCanvas({ world, phase, score }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const phaseRef = useRef(phase)
+  const scoreRef = useRef(score)
   phaseRef.current = phase
+  scoreRef.current = score
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -32,7 +35,7 @@ export function GameCanvas({ world, phase }: GameCanvasProps) {
     function frame(ts: number) {
       const dt = Math.min((ts - last) / 1000, 1 / 30)
       last = ts
-      scene.update(world.current, phaseRef.current, dt, ts / 1000)
+      scene.update(world.current, phaseRef.current, scoreRef.current, dt, ts / 1000)
       raf = requestAnimationFrame(frame)
     }
     raf = requestAnimationFrame(frame)
