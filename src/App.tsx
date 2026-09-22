@@ -15,7 +15,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1 className="wordmark">Splashy Fish</h1>
+        <h1 className="wordmark">
+          Splashy <span className="wordmark__accent">Fish</span>
+        </h1>
         <div className="topbar__stats">
           <span className="topbar__stat">
             <span className="stat__label">Score</span> {state.score.toLocaleString()}

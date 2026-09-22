@@ -3,6 +3,11 @@ import * as THREE from 'three'
 /**
  * The water starts at the bright reef surface and fades to the abyss as the
  * fish descends, reaching full depth after DARKEN_SCORE points (ten levels).
+ *
+ * Colours follow the gig-ambulance toy-town kit: soft pastels on a lavender
+ * base, one ink colour for outlines, and saturated accents kept for gameplay
+ * reads (red = danger, yellow = reward). The abyss is a cozy purple twilight
+ * rather than black, so the fish and hazards stay readable all the way down.
  */
 export const DARKEN_SCORE = 50
 
@@ -12,16 +17,18 @@ export interface Palette {
   hemi: { sky: number; ground: number; intensity: number }
   key: { color: number; intensity: number }
   fill: { color: number; intensity: number }
+  shadow: { color: number; opacity: number }
+  ink: number
   coral: [number, number, number, number]
   coralTip: number
   coralTipGlow: number
   rock: number
+  weed: number
   chain: number
   anchorMetal: number
-  metalness: number
-  metalRough: number
+  anchorTrim: number
   mineShell: number
-  mineSpike: number
+  mineNub: number
   mineLamp: number
   mineLampGlow: number
   fishBody: number
@@ -34,57 +41,61 @@ export interface Palette {
 }
 
 const SURFACE: Palette = {
-  water: [0xcdf2fb, 0x5fc3e4, 0x1f6fa8, 0x0a2f52],
-  fog: { color: 0x0a2f52, near: 620, far: 1560 },
-  hemi: { sky: 0xeaffff, ground: 0x0d2c48, intensity: 2.6 },
-  key: { color: 0xfff3e0, intensity: 3.6 },
-  fill: { color: 0xbfe8ff, intensity: 1.8 },
-  coral: [0xff6a44, 0xe8432f, 0xff9a52, 0xd8362a],
-  coralTip: 0xffd166,
+  water: [0xdaf6ff, 0xa6e3f6, 0x86c4f0, 0xa491ea],
+  fog: { color: 0xa491ea, near: 1500, far: 3400 },
+  hemi: { sky: 0xf1eaff, ground: 0xa58cf2, intensity: 1.9 },
+  key: { color: 0xfff1dc, intensity: 2.4 },
+  fill: { color: 0xcde8ff, intensity: 0.8 },
+  shadow: { color: 0x3b2e5a, opacity: 0.2 },
+  ink: 0x3b2e5a,
+  coral: [0xff9fbd, 0xff9e4a, 0xa58cf2, 0x35c3b2],
+  coralTip: 0xffd45e,
   coralTipGlow: 0,
-  rock: 0x8c5a4a,
-  chain: 0xb9c7d4,
-  anchorMetal: 0x7b8b9c,
-  metalness: 0.55,
-  metalRough: 0.32,
-  mineShell: 0x2f3a46,
-  mineSpike: 0xc8a24a,
-  mineLamp: 0xff4438,
-  mineLampGlow: 1.1,
-  fishBody: 0xff8a3d,
-  fishFin: 0xffb066,
-  fishStripe: 0xe8543f,
-  fishGlow: 0xff7a3a,
+  rock: 0xcdbeff,
+  weed: 0x45c48e,
+  chain: 0xbac2ce,
+  anchorMetal: 0x3a4572,
+  anchorTrim: 0xffc53a,
+  mineShell: 0x3a4572,
+  mineNub: 0x666c7a,
+  mineLamp: 0xff3d52,
+  mineLampGlow: 1.2,
+  fishBody: 0xff9e4a,
+  fishFin: 0xffd45e,
+  fishStripe: 0xf6f3ec,
+  fishGlow: 0xff9e4a,
   fishGlowIntensity: 0,
-  bubble: 0xeaffff,
-  bubbleOpacity: 0.42,
+  bubble: 0xffffff,
+  bubbleOpacity: 0.6,
 }
 
 const DEEP: Palette = {
-  water: [0x1a5570, 0x0b3a54, 0x05203a, 0x01101c],
-  fog: { color: 0x04182b, near: 380, far: 1120 },
-  hemi: { sky: 0x7fd8ff, ground: 0x01070d, intensity: 1.05 },
-  key: { color: 0x9fd6ff, intensity: 1.9 },
-  fill: { color: 0x1f5f80, intensity: 0.7 },
-  coral: [0x123044, 0x0d2230, 0x17384c, 0x0a1b26],
-  coralTip: 0x45e3d4,
-  coralTipGlow: 2.4,
-  rock: 0x081722,
-  chain: 0x7fa2bc,
-  anchorMetal: 0x36495a,
-  metalness: 0.75,
-  metalRough: 0.28,
-  mineShell: 0x090f16,
-  mineSpike: 0x22303c,
-  mineLamp: 0xff3b52,
-  mineLampGlow: 3,
-  fishBody: 0xe2603a,
-  fishFin: 0xc4602c,
-  fishStripe: 0x8f2e22,
-  fishGlow: 0xff7a3a,
-  fishGlowIntensity: 1.1,
-  bubble: 0x9ff0ff,
-  bubbleOpacity: 0.3,
+  water: [0x5d4db4, 0x44378f, 0x2e2669, 0x1d1848],
+  fog: { color: 0x2e2669, near: 900, far: 2600 },
+  hemi: { sky: 0xb3a3ff, ground: 0x2a1f5c, intensity: 1.35 },
+  key: { color: 0xd6c9ff, intensity: 1.6 },
+  fill: { color: 0x7fd8ff, intensity: 0.7 },
+  shadow: { color: 0x120e2b, opacity: 0.22 },
+  ink: 0x1a1438,
+  coral: [0x8a6fd6, 0x6e5ac8, 0x9b7fe3, 0x3f9aa0],
+  coralTip: 0x7dffe0,
+  coralTipGlow: 1.6,
+  rock: 0x4a3d99,
+  weed: 0x2f8f86,
+  chain: 0x9a90d6,
+  anchorMetal: 0x2a2f5a,
+  anchorTrim: 0xe39b1c,
+  mineShell: 0x241f4f,
+  mineNub: 0x4a4380,
+  mineLamp: 0xff4a64,
+  mineLampGlow: 2.6,
+  fishBody: 0xff9a52,
+  fishFin: 0xffc85e,
+  fishStripe: 0xf0ebff,
+  fishGlow: 0xff9e4a,
+  fishGlowIntensity: 0.4,
+  bubble: 0xc9f6ff,
+  bubbleOpacity: 0.45,
 }
 
 const cA = new THREE.Color()
@@ -97,6 +108,14 @@ function mixHex(a: number, b: number, t: number): number {
   return cOut.copy(cA).lerp(cB, t).getHex()
 }
 
+/* The water blends through hue, so mid-depth passes through periwinkle
+   instead of the grey an RGB mix of aqua and purple would give. */
+function mixHueHex(a: number, b: number, t: number): number {
+  cA.setHex(a)
+  cB.setHex(b)
+  return cOut.copy(cA).lerpHSL(cB, t).getHex()
+}
+
 function mix(a: number, b: number, t: number): number {
   return a + (b - a) * t
 }
@@ -104,9 +123,9 @@ function mix(a: number, b: number, t: number): number {
 export function paletteAt(t: number): Palette {
   const k = Math.max(0, Math.min(1, t))
   return {
-    water: SURFACE.water.map((c, i) => mixHex(c, DEEP.water[i], k)) as Palette['water'],
+    water: SURFACE.water.map((c, i) => mixHueHex(c, DEEP.water[i], k)) as Palette['water'],
     fog: {
-      color: mixHex(SURFACE.fog.color, DEEP.fog.color, k),
+      color: mixHueHex(SURFACE.fog.color, DEEP.fog.color, k),
       near: mix(SURFACE.fog.near, DEEP.fog.near, k),
       far: mix(SURFACE.fog.far, DEEP.fog.far, k),
     },
@@ -123,16 +142,21 @@ export function paletteAt(t: number): Palette {
       color: mixHex(SURFACE.fill.color, DEEP.fill.color, k),
       intensity: mix(SURFACE.fill.intensity, DEEP.fill.intensity, k),
     },
+    shadow: {
+      color: mixHex(SURFACE.shadow.color, DEEP.shadow.color, k),
+      opacity: mix(SURFACE.shadow.opacity, DEEP.shadow.opacity, k),
+    },
+    ink: mixHex(SURFACE.ink, DEEP.ink, k),
     coral: SURFACE.coral.map((c, i) => mixHex(c, DEEP.coral[i], k)) as Palette['coral'],
     coralTip: mixHex(SURFACE.coralTip, DEEP.coralTip, k),
     coralTipGlow: mix(SURFACE.coralTipGlow, DEEP.coralTipGlow, k),
     rock: mixHex(SURFACE.rock, DEEP.rock, k),
+    weed: mixHex(SURFACE.weed, DEEP.weed, k),
     chain: mixHex(SURFACE.chain, DEEP.chain, k),
     anchorMetal: mixHex(SURFACE.anchorMetal, DEEP.anchorMetal, k),
-    metalness: mix(SURFACE.metalness, DEEP.metalness, k),
-    metalRough: mix(SURFACE.metalRough, DEEP.metalRough, k),
+    anchorTrim: mixHex(SURFACE.anchorTrim, DEEP.anchorTrim, k),
     mineShell: mixHex(SURFACE.mineShell, DEEP.mineShell, k),
-    mineSpike: mixHex(SURFACE.mineSpike, DEEP.mineSpike, k),
+    mineNub: mixHex(SURFACE.mineNub, DEEP.mineNub, k),
     mineLamp: mixHex(SURFACE.mineLamp, DEEP.mineLamp, k),
     mineLampGlow: mix(SURFACE.mineLampGlow, DEEP.mineLampGlow, k),
     fishBody: mixHex(SURFACE.fishBody, DEEP.fishBody, k),

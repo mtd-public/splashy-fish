@@ -32,7 +32,9 @@ export function GameOverlay({ phase, score, best, onStart, onResume, onNewGame }
           >
             {phase === 'ready' && (
               <>
-                <h2>Splashy Fish</h2>
+                <h2>
+                  Splashy <span className="wordmark__accent">Fish</span>
+                </h2>
                 <p>Swim down. The current keeps pulling you left — splash to swim right and dodge the coral, anchors and mines.</p>
                 <button type="button" className="btn btn--primary" onClick={onStart}>
                   Start swimming

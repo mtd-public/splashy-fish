@@ -15,9 +15,15 @@ are the template's shell. The game itself lives in `src/game/`: physics
 and scoring in `physics.ts` (plain logical coordinates, no rendering
 concerns), the React game loop in `useGameEngine.ts`, the surface-to-abyss
 colour ramp in `palette.ts`, and a [three.js](https://threejs.org/) scene in
-`scene3d.ts` — a low-poly fish, coral, anchor and mine bands, ambient
+`scene3d.ts` — a chibi clownfish, coral, anchor and mine bands, ambient
 bubbles and splash particles — driven from `src/components/GameCanvas.tsx`
 into `.board-shell`.
+
+The art style follows [gig-ambulance](https://github.com/mtd-public/gig-ambulance):
+chunky, smooth-shaded toy shapes with thin ink outlines and soft drop
+shadows, pastel colours on a lavender base, and a HUD of cream cards with
+thick ink borders. The descent fades the reef into a purple twilight rather
+than black, so everything stays readable.
 
 The camera always frames the full playfield width, so obstacle bands reach
 both edges whatever shape the window is. On phones and tablets held upright
